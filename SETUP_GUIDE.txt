@@ -1,0 +1,349 @@
+================================================================================
+        GUÍA COMPLETA DE INSTALACIÓN Y CONFIGURACIÓN DEL SERVIDOR
+                    Sistema de Autenticación - Login
+================================================================================
+
+TABLA DE CONTENIDOS:
+1. Descripción General del Proyecto
+2. Estructura del Proyecto Creado
+3. Paso a Paso de Implementación
+4. Errores Encontrados y Soluciones
+5. Cómo Ejecutar el Servidor
+6. Pruebas del Sistema
+
+================================================================================
+1. DESCRIPCIÓN GENERAL DEL PROYECTO
+================================================================================
+
+El proyecto es un sistema de autenticación básico que incluye:
+- Una interfaz web moderna (HTML + CSS + JavaScript)
+- Un servidor backend con Express.js
+- Una base de datos en formato JSON
+- Validación de credenciales de usuario
+
+FLUJO DEL PROCESO:
+1. Usuario ingresa credenciales en el formulario web
+2. JavaScript captura el evento y envía datos al servidor
+3. Servidor valida credenciales contra db.json
+4. Servidor responde con éxito o error
+5. Interfaz muestra mensaje de resultado
+
+================================================================================
+2. ESTRUCTURA DEL PROYECTO CREADO
+================================================================================
+
+Directorios y archivos creados:
+
+/trabajos/
+├── index.html                    # Formulario de login (interfaz)
+├── client.js                     # JavaScript del cliente
+├── styles.css                    # Estilos CSS
+├── README.md                     # Documentación completa
+├── SETUP_GUIDE.txt              # Este archivo
+└── mi-json-server/
+    ├── server.js                 # Servidor Express.js
+    ├── db.json                   # Base de datos con usuarios
+    ├── package.json              # Configuración npm
+    └── node_modules/             # Dependencias instaladas
+
+================================================================================
+3. PASO A PASO DE IMPLEMENTACIÓN
+================================================================================
+
+PASO 1: Actualizar index.html
+────────────────────────────
+- Agregué formulario HTML con id="loginForm"
+- Agregué inputs para usuario y contraseña
+- Agregué div para mostrar mensajes de respuesta
+- Cambié script src de "mi-json-server/server.js" a "client.js"
+
+PASO 2: Crear client.js
+───────────────────────
+Contenido:
+- Obtiene referencias a elementos del DOM (formulario, inputs, div de mensajes)
+- Agrega listener al evento 'submit' del formulario
+- Al enviar: captura username y password
+- Realiza fetch POST a http://localhost:3000/api/login
+- Parsea respuesta JSON
+- Muestra mensaje de éxito (verde) o error (rojo)
+- Maneja errores de conexión
+
+PASO 3: Actualizar styles.css
+──────────────────────────────
+Agregué estilos para:
+- Clase .message: para mostrar mensajes
+- .message.success: fondo verde y texto blanco
+- .message.error: fondo rojo y texto blanco
+- Animaciones: @keyframes slideIn para efecto de aparición
+
+PASO 4: Actualizar mi-json-server/server.js
+─────────────────────────────────────────────
+Reemplacé el código anterior con un servidor Express completo:
+- Importa: express, fs, path, fileURLToPath
+- Crea aplicación Express
+- Configura middleware: express.json(), express.static()
+- Define ruta POST /api/login que:
+  * Recibe { username, password } en el body
+  * Lee db.json
+  * Parsea JSON a array de usuarios
+  * Busca usuario con find() que coincida con credenciales
+  * Devuelve JSON con { success: true/false, message: "..." }
+  * Maneja errores (archivo no encontrado, JSON inválido)
+- Escucha en puerto 3000
+- Imprime mensaje cuando está listo
+
+PASO 5: Actualizar mi-json-server/package.json
+───────────────────────────────────────────────
+Cambios realizados:
+- "type": "module" (para usar import/export ES6)
+- Agregué dependencia: "express": "^4.18.2"
+- Actualicé script "start": "node server.js"
+- Removí script "test"
+
+PASO 6: Instalar dependencias
+──────────────────────────────
+Ejecutar en directorio mi-json-server:
+$ cd /home/cohorte5/Escritorio/CI/trabajos/mi-json-server && npm install
+
+Resultado: Se instalaron express y sus dependencias (68 paquetes)
+
+================================================================================
+4. ERRORES ENCONTRADOS Y SOLUCIONES
+================================================================================
+
+ERROR 1: "npm ERR! enoent Could not read package.json"
+────────────────────────────────────────────────────
+Ubicación: Al intentar ejecutar "npm start" desde directorio raíz
+
+SÍNTOMA:
+$ npm start
+npm error enoent Could not read package.json: ENOENT: no such file or directory
+Causa: El comando se ejecutaba desde /trabajos en lugar de /trabajos/mi-json-server
+
+SOLUCIÓN:
+- Ejecutar desde dentro del directorio mi-json-server
+- Comando usado correctamente:
+  $ cd /home/cohorte5/Escritorio/CI/trabajos/mi-json-server && npm start
+
+COMANDO QUE FALLÓ:
+$ cd /home/cohorte5/Escritorio/CI/trabajos
+$ npm start
+
+COMANDO QUE FUNCIONÓ:
+$ cd /home/cohorte5/Escritorio/CI/trabajos/mi-json-server
+$ npm start
+
+
+ERROR 2: "Cannot find module '/home/cohorte5/.../server.js'"
+──────────────────────────────────────────────────────────
+Ubicación: Al intentar ejecutar "node server.js" desde directorio raíz
+
+SÍNTOMA:
+$ node server.js
+Error: Cannot find module '/home/cohorte5/Escritorio/CI/trabajos/server.js'
+Error: ENOENT: no such file or directory
+
+CAUSA: Node estaba buscando server.js en /trabajos pero el archivo estaba en
+       /trabajos/mi-json-server/
+
+SOLUCIÓN:
+- Navegar primero al directorio correcto
+- El archivo server.js está en mi-json-server/, no en raíz
+
+RUTA INCORRECTA:
+/home/cohorte5/Escritorio/CI/trabajos/server.js  ✗ (no existe)
+
+RUTA CORRECTA:
+/home/cohorte5/Escritorio/CI/trabajos/mi-json-server/server.js  ✓
+
+COMANDO QUE FALLÓ:
+$ cd /home/cohorte5/Escritorio/CI/trabajos
+$ node server.js
+
+COMANDO QUE FUNCIONÓ:
+$ cd /home/cohorte5/Escritorio/CI/trabajos/mi-json-server
+$ node server.js
+
+PROCESO DE SOLUCIÓN:
+1. Verif prueba de pwd para confirmar ubicación actual
+2. Se movió al directorio correcto: cd mi-json-server
+3. Se ejecutó: node server.js
+4. Resultado exitoso: "Servidor corriendo en http://localhost:3000"
+
+
+ERROR 3: "Cannot find module 'express'"
+─────────────────────────────────────────
+(No ocurrió porque se ejecutó npm install antes)
+
+PREVENCIÓN:
+- Asegurarse de ejecutar "npm install" después de actualizar package.json
+- Verif que package.json tenga "express" en dependencies
+- Verif que node_modules/ exista en el directorio
+
+SÍNTOMAS POSIBLES:
+Error: Cannot find module 'express'
+    at Module._load...
+
+SOLUCIÓN:
+$ npm install
+
+
+================================================================================
+5. CÓMO EJECUTAR EL SERVIDOR
+================================================================================
+
+REQUISITOS:
+- Node.js instalado (v14+)
+- npm (incluido con Node.js)
+- Terminal/Consola abierta
+
+INSTRUCCIONES PASO A PASO:
+
+1. Abrir terminal y navegar al directorio del servidor:
+   $ cd /home/cohorte5/Escritorio/CI/trabajos/mi-json-server
+
+2. Verificar que package.json existe:
+   $ ls package.json
+   package.json  ← debe aparecer
+
+3. Instalar dependencias (primera vez o si se actualiza package.json):
+   $ npm install
+
+4. Iniciar el servidor:
+   $ cd /home/cohorte5/Escritorio/CI/trabajos/mi-json-server && npm start
+   O directamente: $ cd /home/cohorte5/Escritorio/CI/trabajos/mi-json-server && node server.js
+
+5. Verificar que el servidor está corriendo:
+   Debe aparecer: "Servidor corriendo en http://localhost:3000"
+
+6. Abrir navegador:
+   - Ir a: http://localhost:3000
+   - Debe cargar la página con el formulario de login
+
+7. Para detener el servidor:
+   - Presionar CTRL + C en la terminal
+
+
+ESTRUCTURA DE DIRECTORIOS CORRECTA AL EJECUTAR:
+
+$ pwd
+/home/cohorte5/Escritorio/CI/trabajos/mi-json-server
+
+$ ls -la
+total XXX
+-rw-r--r-- 1 ... db.json
+-rw-r--r-- 1 ... package.json
+-rw-r--r-- 1 ... server.js
+drwxr-xr-x X ... node_modules/
+
+$ npm start
+Servidor corriendo en http://localhost:3000  ✓
+
+
+================================================================================
+6. PRUEBAS DEL SISTEMA
+================================================================================
+
+CREDENCIALES DE PRUEBA (definidas en db.json):
+
+Usuario: admin
+Contraseña: password
+Resultado esperado: ✓ Login successful!
+
+Usuario: user1
+Contraseña: mypassword
+Resultado esperado: ✓ Login successful!
+
+Usuario: admin
+Contraseña: wrongpassword
+Resultado esperado: ✗ Credenciales inválidas
+
+Usuario: nonexistent
+Contraseña: password
+Resultado esperado: ✗ Credenciales inválidas
+
+
+PASOS PARA PROBAR:
+
+1. Asegurarse que el servidor está corriendo:
+   Terminal: Servidor corriendo en http://localhost:3000
+
+2. Abrir navegador en http://localhost:3000
+
+3. Ingresar credenciales:
+   - Campo Usuario: admin
+   - Campo Contraseña: password
+
+4. Hacer click en "Iniciar Sesión"
+
+5. Verificar resultado:
+   - Debe aparecer mensaje verde: "✓ Login successful!"
+   - En consola del navegador (F12): se verá "Login exitoso: admin"
+
+6. Prueba con credencial incorrecta:
+   - Usuario: admin
+   - Contraseña: wrongpassword
+   - Click en botón
+   - Debe aparecer: "✗ Credenciales inválidas"
+
+
+INFORMACIÓN DE DEPURACIÓN:
+
+Consola del navegador (F12):
+- Muestra logs del cliente
+- Verifica peticiones Network
+- Observa respuestas del servidor
+
+Terminal del servidor:
+- Muestra logs de Express
+- Se pueden agregar console.log() para debugging
+- Presionar CTRL+C para detener
+
+Respuesta JSON esperada (éxito):
+{
+  "success": true,
+  "message": "Login successful!"
+}
+
+Respuesta JSON esperada (error):
+{
+  "success": false,
+  "message": "Credenciales inválidas"
+}
+
+
+================================================================================
+7. RESUMEN DE SOLUCIÓN DE PROBLEMAS
+================================================================================
+
+PROBLEMA                          → SOLUCIÓN
+─────────────────────────────────────────────────────────────────────────────
+
+Servidor no inicia               → Verificar que estés en directorio correcto
+                                  → Ejecutar: cd mi-json-server
+                                  → Asegurar que npm install se ejecutó
+
+"Cannot find module 'express'"   → Ejecutar: npm install
+
+"Cannot find db.json"            → El archivo debe estar en mi-json-server/
+                                  → No mover de ubicación
+
+Página no carga                  → Verificar que servidor está corriendo
+                                  → Ir a http://localhost:3000
+                                  → Revisar consola del navegador (F12)
+
+Login no funciona                → Verificar credenciales en db.json
+                                  → Revisar respuesta del servidor (Network)
+                                  → Verificar que client.js está en raíz
+
+Port 3000 en uso                 → Cambiar puerto en server.js
+                                  → O matar proceso: lsof -i :3000
+
+================================================================================
+FIN DE LA GUÍA
+================================================================================
+
+Para más información, ver README.md
+
+Creado: 13 de mayo de 2026
+Última actualización: 13 de mayo de 2026
