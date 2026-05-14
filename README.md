@@ -184,10 +184,6 @@ Posibles mejoras:
 - **Base de Datos:** JSON (db.json)
 - **Otros:** npm, ES6+ modules
 
-## Autor
-
-Proyecto de práctica - Sistema de Autenticación Básico
-
 ## Licencia
 
 ISC
